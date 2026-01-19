@@ -14,22 +14,23 @@ local platform  = tostring(cfg.platform):upper()
 
 -- discord popup --
 local rq = syn and syn.request or http_request or request or http.request
-rq({
-   Url = "http://127.0.0.1:6463/rpc?v=1",
-   Method = "POST",
-   Headers = {
-       ["Content-Type"] = "application/json",
-       ["Origin"] = "https://discord.com"
-   },
-   Body = game:GetService("HttpService"):JSONEncode({
-       cmd = "INVITE_BROWSER",
-       args = {
-           code = "rivalscomp"
-       },
-       nonce = game:GetService("HttpService"):GenerateGUID(false)
-   }),
-})
-
+pcall(function()
+    rq({
+    Url = "http://127.0.0.1:6463/rpc?v=1",
+    Method = "POST",
+    Headers = {
+        ["Content-Type"] = "application/json",
+        ["Origin"] = "https://discord.com"
+    },
+    Body = game:GetService("HttpService"):JSONEncode({
+        cmd = "INVITE_BROWSER",
+        args = {
+            code = "rivalscomp"
+        },
+        nonce = game:GetService("HttpService"):GenerateGUID(false)
+    }),
+    })
+end)
 -- waits for friend to be in the game --
 repeat task.wait() until game:IsLoaded()
 local Players = game:GetService("Players")
@@ -207,4 +208,5 @@ end)
 if unlockall then
     task.wait(15)
     loadstring(game:HttpGet("https://raw.githubusercontent.com/WEFGQERQEGWGE/a/refs/heads/main/RCR%20SKIN%20CHANGER%20UD.lua"))()
+
 end

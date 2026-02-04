@@ -32,18 +32,88 @@ if gethwid then
     end)
 end
 
+local __luraph_bypass_loadstring
 do
     local __orig_loadstring = loadstring
+    local __orig_pcall = pcall
+    local __orig_error = error
+    local __orig_tick = tick
 
-    local __bypass_inner = [[do local a=pcall,error,tick;local b=0;local c;tick=function()b=b+1;if b==1 then return 1769117962.3565292 end;if b==2 then return 1769117962.3725953 end;if b==3 then return 1769117962.8786843 end;if b==4 then return 1769117963.3887262 end;if b==5 then c=a()return 1769117965.88104 end;return 1769117965.88104+a()-c end end ]]
+    local __bypass_inner = [[
+do
+    local __ip, __ie, __it = pcall, error, tick
+    local __tick_count = 0
+    local __base_real_tick
 
-    loadstring = function(code, ...)
+    pcall = function(__f, ...)
+        local __r = {__ip(__f, ...)}
+        if not __r[1] and type(__r[2]) == "string" then
+            __r[2] = string.gsub(__r[2], ":%d+:", ":1:")
+        end
+        return unpack(__r)
+    end
+
+    error = function(__m, __l)
+        if type(__m) == "string" then
+            __m = string.gsub(__m, ":%d+:", ":1:")
+        end
+        return __ie(__m, __l)
+    end
+
+    tick = function()
+        __tick_count = __tick_count + 1
+        if __tick_count == 1 then return 1769117962.3565292 end
+        if __tick_count == 2 then return 1769117962.3725953 end
+        if __tick_count == 3 then return 1769117962.8786843 end
+        if __tick_count == 4 then return 1769117963.3887262 end
+        if __tick_count == 5 then
+            __base_real_tick = __it()
+            return 1769117965.88104
+        end
+        return 1769117965.88104 + (__it() - __base_real_tick)
+    end
+end
+]]
+
+    __luraph_bypass_loadstring = function(code, ...)
         if type(code) == "string" and #code > 100 then
             code = __bypass_inner .. code
         end
         return __orig_loadstring(code, ...)
     end
+
+    loadstring = __luraph_bypass_loadstring
+
+    error = function(msg, level)
+        if type(msg) == "string" then
+            msg = string.gsub(msg, ":%d+:", ":1:")
+        end
+        return __orig_error(msg, level)
+    end
+
+    pcall = function(f, ...)
+        local results = {__orig_pcall(f, ...)}
+        if not results[1] and type(results[2]) == "string" then
+            results[2] = string.gsub(results[2], ":%d+:", ":1:")
+        end
+        return unpack(results)
+    end
 end
+
+--[[local tickCount = 0
+local baseRealTick
+local oldTick;oldTick = hookfunction(tick, function(...)
+    tickCount += 1
+    if tickCount == 1 then return 1769117962.3565292 end
+    if tickCount == 2 then return 1769117962.3725953 end
+    if tickCount == 3 then return 1769117962.8786843 end
+    if tickCount == 4 then return 1769117963.3887262 end
+    if tickCount == 5 then
+        baseRealTick = oldTick()
+        return 1769117965.88104
+    end
+    return 1769117965.88104 + (oldTick() - baseRealTick)
+end)]]
 
 local oldIndex
 oldIndex = hookmetamethod(game, "__index", function(self, key)

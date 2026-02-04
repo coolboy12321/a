@@ -1,5 +1,3 @@
-wait(5)
-
 hookfunction(isfunctionhooked,function(...)
     return false
 end)
@@ -21,11 +19,6 @@ oldHttpReqest = hookfunction(http.request,function(...)
         return true
     end
     return oldHttpReqest(...)
-end)
-
-local oldHwid;
-oldHwid = hookfunction(gethwid,function()
-    return "0B6102CB07E3C4DBB5789F97C3A26901B21A3C48030AAFA073BC308236290272"
 end)
 
 local tickCount = 0
@@ -91,6 +84,9 @@ end)
 if success then
     writefile("Yabujin/rcr.png", result)
 end
+
+writefile("Yabujin/key.txt", "rcr")
+writefile("Yabujin/session.txt", "d8b894fb")
 
 local oldGetCustomAsset; oldGetCustomAsset = hookfunction(getcustomasset, function(...)
     local args = {...}
